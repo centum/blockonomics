@@ -57,12 +57,12 @@ func (c *APIClient) Invoice(
 	}
 
 	var resp struct {
-		Number string `json:"number"`
+		Number int64 `json:"number"`
 	}
 	err = c.send(req, &resp)
 	if err != nil {
 		return "", err
 	}
 
-	return fmt.Sprintf("%s/invoice/%s/#/?key=%s", c.APIBase, resp.Number, string(passphrase)), nil
+	return fmt.Sprintf("%s/invoice/%d/#/?key=%s", c.APIBase, resp.Number, string(passphrase)), nil
 }
