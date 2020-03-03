@@ -85,6 +85,9 @@ func main() {
 
 	case "invoice":
 		dump(api.Invoice(addr, amount, currency, description, time.Now().Add(invoiceLive)))
+	default:
+		fmt.Printf("%q is not valid command.\n", os.Args[1])
+		usage()
 	}
 
 }
@@ -101,7 +104,6 @@ func dump(v interface{}, err error) {
 }
 
 func usage() {
-	fmt.Printf("%q is not valid command.\n", os.Args[1])
 	fmt.Printf("usage: %s <command> [<args>]", os.Args[0])
 	os.Exit(-1)
 }
