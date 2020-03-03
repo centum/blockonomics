@@ -7,8 +7,8 @@ import (
 
 type Balance struct {
 	Addr        string `json:"addr"`
-	Confirmed   int32  `json:"confirmed"`
-	Unconfirmed int32  `json:"unconfirmed"`
+	Confirmed   int64  `json:"confirmed"`
+	Unconfirmed int64  `json:"unconfirmed"`
 }
 
 func (c *APIClient) Balance(addrs ...string) (balanceList []Balance, err error) {
