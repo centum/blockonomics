@@ -14,7 +14,7 @@ supports almost all fiat currencies.
 
 * Get address
 ```shell script
-blockonomics-cli addr --token your_token --account another_account --reset
+blockonomics-cli addr_new --token your_token --account another_account --reset
 ```
 * Make invoice
 ```shell script
