@@ -54,6 +54,8 @@ func main() {
 		cmd.StringVar(&currency, "currency", "USD", "Invoice currency")
 		cmd.StringVar(&description, "description", "", "Invoice description")
 		cmd.DurationVar(&invoiceLive, "live", 1*time.Hour, "Invoice live time")
+	case "price":
+		cmd.StringVar(&currency, "currency", "USD", "Current price")
 	default:
 		usage()
 	}
@@ -85,6 +87,10 @@ func main() {
 
 	case "invoice":
 		dump(api.Invoice(addr, amount, currency, description, time.Now().Add(invoiceLive)))
+
+	case "price":
+		dump(api.Price(currency))
+
 	default:
 		fmt.Printf("%q is not valid command.\n", os.Args[1])
 		usage()
