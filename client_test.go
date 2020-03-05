@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -15,7 +16,7 @@ import (
 
 type BlockonomicsHandlers struct {
 	token    string
-	contents map[string]string
+	contents map[int]string
 	server   *httptest.Server
 }
 
@@ -68,11 +69,11 @@ func (s *BlockonomicsHandlers) Invoice(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(err.Error()))
 		return
 	}
-	key := string(genPass(8))
+	key := rand.Intn(100000)
 	s.contents[key] = data.Content
 
 	body, err = json.Marshal(&struct {
-		Number string `json:"number"`
+		Number int `json:"number"`
 	}{
 		Number: key,
 	})
@@ -86,7 +87,7 @@ func (s *BlockonomicsHandlers) Invoice(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewTestBlockonomicsHandler() *BlockonomicsHandlers {
-	b := &BlockonomicsHandlers{token: "token123", contents: make(map[string]string)}
+	b := &BlockonomicsHandlers{token: "token123", contents: make(map[int]string)}
 	m := http.NewServeMux()
 	m.HandleFunc("/api/new_address", b.NewAddress)
 	m.HandleFunc("/api/invoice", b.Invoice)
