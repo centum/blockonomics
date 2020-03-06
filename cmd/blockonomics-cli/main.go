@@ -44,7 +44,7 @@ func main() {
 		cmd.BoolVar(&reset, "reset", false, "reset prev address")
 	case "balance":
 		cmd.StringVar(&addr, "addr", "", "Whitespace separated list of bitcoin addresses/xpubs")
-	case "searchhistory":
+	case "history":
 		cmd.StringVar(&addr, "addr", "", "Whitespace separated list of bitcoin addresses/xpubs")
 	case "tx_detail":
 		cmd.StringVar(&txid, "txid", "", "transaction id")
@@ -79,7 +79,7 @@ func main() {
 	case "balance":
 		dump(api.Balance(addr))
 
-	case "searchhistory":
+	case "history":
 		dump(api.SearchHistory(addr))
 
 	case "tx_detail":
