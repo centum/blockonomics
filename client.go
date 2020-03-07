@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const APIBase = "https://www.blockonomics.co"
+var APIBase = "https://www.blockonomics.co"
 
 type APIClient struct {
 	APIBase string
