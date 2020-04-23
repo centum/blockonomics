@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"path"
 	"time"
@@ -18,6 +20,7 @@ type APIClient struct {
 	Client  *http.Client
 	token   string
 	timeout time.Duration
+	Logger  io.Writer
 }
 
 func NewClient(token string, opts ...Option) *APIClient {
@@ -39,6 +42,12 @@ type Option func(s *APIClient)
 func WithTimeout(timeout time.Duration) Option {
 	return func(s *APIClient) {
 		s.timeout = timeout
+	}
+}
+
+func WithLogger(output io.Writer) Option {
+	return func(s *APIClient) {
+		s.Logger = output
 	}
 }
 
@@ -98,6 +107,10 @@ func (c *APIClient) send(req *http.Request, v interface{}) error {
 		req.Header.Set("Content-type", "application/json")
 	}
 
+	defer func() {
+		c.log(req, resp)
+	}()
+
 	resp, err = c.Client.Do(req)
 
 	if err != nil {
@@ -131,5 +144,24 @@ func (c *APIClient) send(req *http.Request, v interface{}) error {
 			err: ErrServer,
 		}
 	}
+}
 
+// log will dump request and response to the log file
+func (c *APIClient) log(req *http.Request, resp *http.Response) {
+	if c.Logger == nil {
+		return
+	}
+	var (
+		reqDump  string
+		respDump []byte
+	)
+
+	if req != nil {
+		reqDump = fmt.Sprintf("%s %s", req.Method, req.URL.String())
+	}
+	if resp != nil {
+		respDump, _ = httputil.DumpResponse(resp, true)
+	}
+
+	_, _ = c.Logger.Write([]byte(fmt.Sprintf("Request: %s\nResponse: %s\n", reqDump, string(respDump))))
 }
