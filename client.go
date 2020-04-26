@@ -27,6 +27,7 @@ func NewClient(token string, opts ...Option) *APIClient {
 	c := &APIClient{
 		APIBase: APIBase,
 		token:   token,
+		Logger:  NewNopLogger(),
 	}
 	for _, o := range opts {
 		o(c)
@@ -50,6 +51,12 @@ func WithLogger(output io.Writer) Option {
 		s.Logger = output
 	}
 }
+
+type nopLogger struct{}
+
+func NewNopLogger() *nopLogger { return &nopLogger{} }
+
+func (nopLogger) Write(p []byte) (n int, err error) { return len(p), nil }
 
 func (c *APIClient) newRequest(method, urlEndpoint string, payload interface{}) (*http.Request, error) {
 	u, err := url.Parse(c.APIBase)
@@ -148,9 +155,6 @@ func (c *APIClient) send(req *http.Request, v interface{}) error {
 
 // log will dump request and response to the log file
 func (c *APIClient) log(req *http.Request, resp *http.Response) {
-	if c.Logger == nil {
-		return
-	}
 	var (
 		reqDump  string
 		respDump []byte
