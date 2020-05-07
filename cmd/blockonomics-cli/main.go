@@ -43,10 +43,13 @@ func main() {
 		cmd.StringVar(&account, "account", "", "get address for account")
 		cmd.BoolVar(&reset, "reset", false, "reset prev address")
 	case "balance":
+		cmd.StringVar(&token, "token", "", "access token to API Blockonomics")
 		cmd.StringVar(&addr, "addr", "", "Whitespace separated list of bitcoin addresses/xpubs")
 	case "history":
+		cmd.StringVar(&token, "token", "", "access token to API Blockonomics")
 		cmd.StringVar(&addr, "addr", "", "Whitespace separated list of bitcoin addresses/xpubs")
 	case "tx_detail":
+		cmd.StringVar(&token, "token", "", "access token to API Blockonomics")
 		cmd.StringVar(&txid, "txid", "", "transaction id")
 	case "invoice":
 		cmd.StringVar(&addr, "addr", "", "Invoice for address")
@@ -61,17 +64,21 @@ func main() {
 	}
 	_ = cmd.Parse(os.Args[2:])
 
-	api := blockonomics.NewClient(token, blockonomics.WithTimeout(30*time.Second))
+	api := blockonomics.NewClient(
+		token,
+		blockonomics.WithTimeout(30*time.Second),
+		blockonomics.WithLogger(os.Stdout),
+	)
 
 	switch cmd.Name() {
 	case "addr_mon_list":
 		dump(api.AddrMonList())
 
 	case "addr_mon_add":
-		dump(api.AddrMonitor(addr, tag))
+		fmt.Println(api.AddrMonitor(addr, tag))
 
 	case "addr_mon_del":
-		dump(api.AddrMonDelete(addr))
+		fmt.Println(api.AddrMonDelete(addr))
 
 	case "addr_new":
 		dump(api.NewAddress(account, reset))
@@ -99,6 +106,7 @@ func main() {
 }
 
 func dump(v interface{}, err error) {
+	fmt.Print("\n\n")
 	if err != nil {
 		fmt.Println(err.Error())
 	}

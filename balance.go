@@ -21,6 +21,8 @@ func (c *APIClient) Balance(addrs ...string) (balanceList []Balance, err error) 
 		return nil, err
 	}
 
+	c.auth(req)
+
 	var data struct {
 		Response []Balance `json:"response"`
 	}

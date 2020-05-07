@@ -114,10 +114,6 @@ func (c *APIClient) send(req *http.Request, v interface{}) error {
 		req.Header.Set("Content-type", "application/json")
 	}
 
-	defer func() {
-		c.log(req, resp)
-	}()
-
 	resp, err = c.Client.Do(req)
 
 	if err != nil {
@@ -126,6 +122,10 @@ func (c *APIClient) send(req *http.Request, v interface{}) error {
 	if resp != nil {
 		defer resp.Body.Close()
 	}
+
+	defer func() {
+		c.log(req, resp)
+	}()
 
 	switch resp.StatusCode {
 	case http.StatusOK:
@@ -155,25 +155,17 @@ func (c *APIClient) send(req *http.Request, v interface{}) error {
 
 // log will dump request and response to the log file
 func (c *APIClient) log(req *http.Request, resp *http.Response) {
-	var (
-		reqDump  string
-		respDump []byte
-	)
+	var reqDump, respDump []byte
 
 	if req != nil {
-		reqDump = fmt.Sprintf("%s %s", req.Method, req.URL.String())
+		reqDump, _ = httputil.DumpRequest(req, true)
 	}
 	if resp != nil {
 		respDump, _ = httputil.DumpResponse(resp, true)
 	}
-	respStatus := ""
-	if resp != nil {
-		respStatus = resp.Status
-	}
 
 	_, _ = c.Logger.Write([]byte(fmt.Sprintf(
-		"Request: %s\nResponse[%s]: %s\n",
-		reqDump,
-		respStatus,
+		"Request: %s\nResponse: %s",
+		string(reqDump),
 		string(respDump))))
 }

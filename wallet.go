@@ -28,7 +28,7 @@ func (c *APIClient) AddrMonList() ([]Address, error) {
 	return data, nil
 }
 
-func (c *APIClient) AddrMonitor(addr string, tag string) (interface{}, error) {
+func (c *APIClient) AddrMonitor(addr string, tag string) error {
 
 	req, err := c.newRequest(http.MethodPost, "/api/address", &struct {
 		Addr string `json:"addr"`
@@ -38,20 +38,19 @@ func (c *APIClient) AddrMonitor(addr string, tag string) (interface{}, error) {
 		tag,
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	c.auth(req)
 
-	var data interface{}
-	err = c.send(req, &data)
+	err = c.send(req, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return data, nil
+	return nil
 }
 
-func (c *APIClient) AddrMonDelete(addr string) (interface{}, error) {
+func (c *APIClient) AddrMonDelete(addr string) error {
 
 	req, err := c.newRequest(http.MethodPost, "/api/delete_address", &struct {
 		Addr string `json:"addr"`
@@ -59,15 +58,14 @@ func (c *APIClient) AddrMonDelete(addr string) (interface{}, error) {
 		addr,
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
 	c.auth(req)
 
-	var data interface{}
-	err = c.send(req, &data)
+	err = c.send(req, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return data, nil
+	return nil
 }

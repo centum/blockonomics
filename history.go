@@ -32,6 +32,8 @@ func (c *APIClient) SearchHistory(addrs ...string) (data *History, err error) {
 		return nil, err
 	}
 
+	c.auth(req)
+
 	err = c.send(req, &data)
 	if err != nil {
 		return nil, err
