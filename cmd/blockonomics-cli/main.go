@@ -19,8 +19,9 @@ func main() {
 		currency,
 		description,
 		tag string
-		amount      float64
-		reset       bool
+		amount float64
+		reset,
+		dumpResponse bool
 		invoiceLive time.Duration
 	)
 
@@ -28,6 +29,7 @@ func main() {
 		usage()
 	}
 	cmd := flag.NewFlagSet(os.Args[1], flag.ExitOnError)
+	cmd.BoolVar(&dumpResponse, "dump", false, "dump request and response")
 	switch cmd.Name() {
 	case "addr_mon_list":
 		cmd.StringVar(&token, "token", "", "access token to API Blockonomics")
@@ -64,11 +66,15 @@ func main() {
 	}
 	_ = cmd.Parse(os.Args[2:])
 
-	api := blockonomics.NewClient(
-		token,
-		blockonomics.WithTimeout(30*time.Second),
-		blockonomics.WithLogger(os.Stdout),
-	)
+	clientOptions := []blockonomics.Option{
+		blockonomics.WithTimeout(30 * time.Second),
+	}
+
+	if dumpResponse {
+		clientOptions = append(clientOptions, blockonomics.WithLogger(os.Stdout))
+	}
+
+	api := blockonomics.NewClient(token, clientOptions...)
 
 	switch cmd.Name() {
 	case "addr_mon_list":
@@ -106,7 +112,7 @@ func main() {
 }
 
 func dump(v interface{}, err error) {
-	fmt.Print("\n\n")
+	fmt.Print("\n")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
