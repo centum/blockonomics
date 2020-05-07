@@ -166,6 +166,14 @@ func (c *APIClient) log(req *http.Request, resp *http.Response) {
 	if resp != nil {
 		respDump, _ = httputil.DumpResponse(resp, true)
 	}
+	respStatus := ""
+	if resp != nil {
+		respStatus = resp.Status
+	}
 
-	_, _ = c.Logger.Write([]byte(fmt.Sprintf("Request: %s\nResponse: %s\n", reqDump, string(respDump))))
+	_, _ = c.Logger.Write([]byte(fmt.Sprintf(
+		"Request: %s\nResponse[%s]: %s\n",
+		reqDump,
+		respStatus,
+		string(respDump))))
 }
